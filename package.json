@@ -1,0 +1,39 @@
+{
+  "name": "ts-json-as-const",
+  "version": "1.0.0",
+  "description": "A simple tool that reads a JSON file and creates a .d.ts file with its keys/values explicitly defined",
+  "main": "index.js",
+  "scripts": {
+    "start": "index.js",
+    "build": "tsc"
+  },
+  "files": [
+    "index.js",
+    "README.md",
+    "package-lock.json"
+  ],
+  "keywords": [
+    "typescript",
+    "json",
+    "const",
+    "declaration",
+    "declaration files"
+  ],
+  "author": "Bethany Hitch",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^16.7.10",
+    "typescript": "^4.4.2"
+  },
+  "peerDependencies": {
+    "typescript": ">=3"
+  },
+  "dependencies": {
+    "@dfoverdx/tocamelcase": "^1.0.7",
+    "isbinaryfile": "^4.0.8",
+    "json5": "^2.2.0"
+  },
+  "bin": {
+    "ts-json-as-const": "./index.js"
+  }
+}
