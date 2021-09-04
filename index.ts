@@ -1,3 +1,4 @@
+#! node
 import '@dfoverdx/tocamelcase';
 import fs from 'fs';
 import path from 'path';
