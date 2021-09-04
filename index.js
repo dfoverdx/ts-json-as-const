@@ -39,7 +39,6 @@ for (var _i = 0, files_1 = files; _i < files_1.length; _i++) {
         .replace(/"(.*?)"(?!=:)/g, "'$1'");
     if (typeof json === 'object') {
         jsonText = jsonText
-            .replace(/(?<=: .*|[\]\}]),$/mg, ';')
             .replace(/(?<=: .*(['\d]|true|false|mull))$/gm, ';');
     }
     var _b = (typeof json === 'object' && !Array.isArray(json))

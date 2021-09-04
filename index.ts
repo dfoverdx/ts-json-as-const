@@ -41,7 +41,6 @@ for (const file of files) {
 
   if (typeof json === 'object') {
     jsonText = jsonText
-      .replace(/(?<=: .*|[\]\}]),$/mg, ';')
       .replace(/(?<=: .*(['\d]|true|false|mull))$/gm, ';');
   }
 
