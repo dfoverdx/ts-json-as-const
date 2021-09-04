@@ -33,8 +33,8 @@ npx ts-json-as-const [path/to/json/file.json ...]
 ```ts
 interface Example {
   foo: {
-    bar: false,
-    baz: true,
+    bar: false;
+    baz: true;
     'i-can': 'hascheezburger';
   },
   array: [
@@ -42,7 +42,7 @@ interface Example {
     2,
     3,
     {
-      foo: 1,
+      foo: 1;
       bar: [
         4,
         5
