@@ -36,7 +36,7 @@ for (var _i = 0, files_1 = files; _i < files_1.length; _i++) {
         process.exit(1);
     }
     jsonText = jsonText.replace(/(?<=^\s*)"(\w+?)"(?=:)/gm, '$1')
-        .replace(/"(.*?)"(?!=:)/g, "'$1'");
+        .replace(/(?<=^\s*)"([^']*?)"/gm, "'$1'");
     if (typeof json === 'object') {
         jsonText = jsonText
             .replace(/(?<=: .*),$/mg, ';')

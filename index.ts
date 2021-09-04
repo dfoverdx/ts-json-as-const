@@ -37,7 +37,7 @@ for (const file of files) {
   }
 
   jsonText = jsonText.replace(/(?<=^\s*)"(\w+?)"(?=:)/gm, '$1')
-    .replace(/"(.*?)"(?!=:)/g, "'$1'");
+    .replace(/(?<=^\s*)"([^']*?)"/gm, "'$1'");
 
   if (typeof json === 'object') {
     jsonText = jsonText
