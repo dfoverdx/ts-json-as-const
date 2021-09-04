@@ -15,6 +15,48 @@ npm install ts-json-as-const
 npx ts-json-as-const [path/to/json/file.json ...]
 ```
 
+## Example
+
+### Input `example.json`
+```json
+{
+  "foo": {
+    "bar": false,
+    "baz": true,
+    "i-can": "hascheezburger"
+  },
+  "array": [ 1, 2, 3, { "foo": 1, "bar": [ 4, 5 ] }, 6 ]
+}
+```
+
+### Output `example.json.d.ts`
+```ts
+interface Example {
+  foo: {
+    bar: false,
+    baz: true,
+    'i-can': 'hascheezburger';
+  },
+  array: [
+    1,
+    2,
+    3,
+    {
+      foo: 1,
+      bar: [
+        4,
+        5
+      ]
+    },
+    6
+  ]
+}
+
+declare const Example: Example;
+
+export = Example;
+```
+
 ## Author
 
 👤 **Bethany Hitch**
