@@ -1,6 +1,6 @@
 {
   "name": "ts-json-as-const",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "A (very) simple CLI tool that reads JSON files and creates .d.ts files with their keys/values explicitly defined",
   "main": "index.js",
   "type": "module",

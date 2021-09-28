@@ -33,8 +33,11 @@ for (const file of files) {
         console.error(`File '${file}' is not a valid json file.`);
         process.exit(1);
     }
+    // if (json == null) {
+    //   console.error(`File '${file}' is a valid json file, but parses as 'null', which cannot be set to a const`)
+    // }
     const [declarationType, equals, terminator] = typeof json === 'object'
-        ? !Array.isArray(json)
+        ? json && !Array.isArray(json)
             ? ['interface', '', '']
             : ['type', ' =', ';']
         : ['const', ' =', ';'];

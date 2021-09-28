@@ -42,7 +42,7 @@ for (const file of files) {
 
   const [declarationType, equals, terminator] =
     typeof json === 'object'
-      ? !Array.isArray(json)
+      ? json && !Array.isArray(json)
         ? ['interface', '', ''] as const
         : ['type', ' =', ';'] as const
       : ['const', ' =', ';'] as const;
