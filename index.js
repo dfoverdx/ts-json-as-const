@@ -1,53 +1,52 @@
 #! node
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-require("@dfoverdx/tocamelcase");
-var fs_1 = __importDefault(require("fs"));
-var path_1 = __importDefault(require("path"));
-var isbinaryfile_1 = require("isbinaryfile");
-var json5_1 = __importDefault(require("json5"));
-var files = process.argv.slice(2);
-for (var _i = 0, files_1 = files; _i < files_1.length; _i++) {
-    var file = files_1[_i];
-    if (!fs_1.default.existsSync(file)) {
-        console.error("File '" + file + "' does not exist.");
+import '@dfoverdx/tocamelcase';
+import fs from 'fs';
+import path from 'path';
+import { isBinaryFileSync } from 'isbinaryfile';
+import json5 from 'json5';
+import stringifyObject from 'stringify-object';
+const files = process.argv.slice(2);
+for (const file of files) {
+    if (!fs.existsSync(file)) {
+        console.error(`File '${file}' does not exist.`);
         process.exit(1);
     }
-    if (!fs_1.default.statSync(file).isFile()) {
-        console.error("File '" + file + "' is not a file.  It is likely a directory.");
+    if (!fs.statSync(file).isFile()) {
+        console.error(`File '${file}' is not a file.  It is likely a directory.`);
         process.exit(1);
     }
-    var buffer = fs_1.default.readFileSync(file);
-    if ((0, isbinaryfile_1.isBinaryFileSync)(buffer)) {
-        console.error("File '" + file + "' is not a text file.");
+    const buffer = fs.readFileSync(file);
+    if (isBinaryFileSync(buffer)) {
+        console.error(`File '${file}' is not a text file.`);
     }
-    var text = buffer.toString();
-    var json = void 0;
-    var jsonText = void 0;
+    const text = buffer.toString();
+    let json;
+    let jsonText;
     try {
-        json = json5_1.default.parse(text);
-        jsonText = JSON.stringify(json, null, 2);
+        json = json5.parse(text);
+        jsonText = stringifyObject(json, {
+            indent: '  ',
+            inlineCharacterLimit: 80,
+        });
     }
-    catch (_a) {
-        console.error("File '" + file + "' is not a valid json file.");
+    catch {
+        console.error(`File '${file}' is not a valid json file.`);
         process.exit(1);
     }
-    jsonText = jsonText.replace(/(?<=^\s*)"(\w+?)"(?=:)/gm, '$1')
-        .replace(/(?<=^\s*)"([^']*?)"/gm, "'$1'");
-    if (typeof json === 'object') {
-        jsonText = jsonText
-            .replace(/(?<=: .*),$/mg, ';')
-            .replace(/(?<=: .*(['\d]|true|false|mull))$/gm, ';');
-    }
-    var _b = (typeof json === 'object' && !Array.isArray(json))
-        ? ['interface', '', '']
-        : ['type', ' =', ';'], typeOrInterface = _b[0], equals = _b[1], terminator = _b[2];
-    var name_1 = path_1.default.basename(file);
-    var typeName = (name_1.includes('.') ? name_1.slice(0, name_1.indexOf('.')) : name_1).toCamelCase(true);
-    var output = typeOrInterface + " " + typeName + equals + " " + jsonText + terminator + "\n\ndeclare const " + typeName + ": " + typeName + ";\n\nexport = " + typeName + ";";
-    console.log("Writing " + file + ".d.ts");
-    fs_1.default.writeFileSync(file + ".d.ts", output);
+    const [declarationType, equals, terminator] = typeof json === 'object'
+        ? !Array.isArray(json)
+            ? ['interface', '', '']
+            : ['type', ' =', ';']
+        : ['const', ' =', ';'];
+    const name = path.basename(file);
+    const typeName = (name.includes('.') ? name.slice(0, name.indexOf('.')) : name).toCamelCase(true);
+    const output = `${declarationType !== 'const'
+        ? `${declarationType} ${typeName}${equals} ${jsonText}${terminator}
+
+declare const ${typeName}: ${typeName};`
+        : `declare ${declarationType} ${typeName}${equals} ${jsonText}${terminator}`}
+
+export = ${typeName};`;
+    console.log(`Writing ${file}.d.ts`);
+    fs.writeFileSync(`${file}.d.ts`, output);
 }

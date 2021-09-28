@@ -4,6 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import { isBinaryFileSync } from 'isbinaryfile';
 import json5 from 'json5';
+import stringifyObject from 'stringify-object';
 
 const files = process.argv.slice(2);
 
@@ -30,31 +31,29 @@ for (const file of files) {
 
   try {
     json = json5.parse(text);
-    jsonText = JSON.stringify(json, null, 2);
+    jsonText = stringifyObject(json, {
+      indent: '  ',
+      inlineCharacterLimit: 80,
+    });
   } catch {
     console.error(`File '${file}' is not a valid json file.`);
     process.exit(1);
   }
 
-  jsonText = jsonText.replace(/(?<=^\s*)"(\w+?)"(?=:)/gm, '$1')
-    .replace(/(?<=^\s*)"([^']*?)"/gm, "'$1'");
-
-  if (typeof json === 'object') {
-    jsonText = jsonText
-      .replace(/(?<=: .*),$/mg, ';')
-      .replace(/(?<=: .*(['\d]|true|false|mull))$/gm, ';');
-  }
-
-  const [typeOrInterface, equals, terminator] = (typeof json === 'object' && !Array.isArray(json))
-    ? ['interface', '', '']
-    : ['type', ' =', ';'];
+  const [declarationType, equals, terminator] =
+    typeof json === 'object'
+      ? !Array.isArray(json)
+        ? ['interface', '', ''] as const
+        : ['type', ' =', ';'] as const
+      : ['const', ' =', ';'] as const;
 
   const name = path.basename(file);
   const typeName = (name.includes('.') ? name.slice(0, name.indexOf('.')) : name).toCamelCase(true);
-  const output =
-    `${typeOrInterface} ${typeName}${equals} ${jsonText}${terminator}
+  const output = `${declarationType !== 'const'
+    ? `${declarationType} ${typeName}${equals} ${jsonText}${terminator}
 
-declare const ${typeName}: ${typeName};
+declare const ${typeName}: ${typeName};`
+    : `declare ${declarationType} ${typeName}${equals} ${jsonText}${terminator}`}
 
 export = ${typeName};`;
 
